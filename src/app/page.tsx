@@ -9,14 +9,12 @@ import { toast } from "react-toastify";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { setUser } = useAuth();
+  const { setUser, user, isLoading } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -36,7 +34,7 @@ export default function LoginPage() {
   };
 
 
-  return (
+  return (!user && !isLoading) && (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
       {/* LEFT DIV: Hidden on small, 50% on medium (2/4), 75% on large (3/4) */}
       <div className="hidden md:flex lg:col-span-2 items-center justify-center secondary-text">
@@ -50,7 +48,7 @@ export default function LoginPage() {
           <p className="secondary-text text-sm mt-1 mb-2">Sign in to your account</p>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5 text-left">
-              <label className="block w-full text-xs font-semibold">
+              <label>
                 Username
               </label>
               <input
@@ -59,12 +57,11 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
                 required
-                className="w-full primary-bg border-color rounded-xl px-4 py-3 text-sm outline-none"
               />
             </div>
 
             <div className="space-y-1.5 text-left">
-              <label className="block w-full text-xs font-semibold">
+              <label>
                 Password
               </label>
               <input
@@ -80,7 +77,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-click-to-action opacity-90 black-text hover:opacity-100 font-bold py-3.5 rounded-xl cursor-pointer text-sm tracking-wide transition-opacity mt-2 disabled:opacity-50"
+              className="primary-btn"
             >
               {loading ? "Signing in…" : "Sign In"}
             </button>

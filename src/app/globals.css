@@ -9,39 +9,70 @@
   --click-to-action: #F59E0B;
 }
 
-.bg-layer-1 {
+@utility bg-layer-1 {
   background-color: var(--layer-1);
 }
 
-.primary-bg {
+@utility primary-bg {
   background-color: var(--background) !important;
 }
 
-.black-text {
+@utility black-text {
   color: var(--background) !important;
 }
 
-.secondary-text {
+@utility secondary-text {
   color: var(--sub-text);
 }
 
-.border-color {
+@utility border-color {
   border-color: var(--border-color) !important;
   border-width: 1px !important;
 }
 
-.border-color-bottom {
+@utility border-color-bottom {
   border-bottom-color: var(--border-color) !important;
   border-bottom-width: 1px !important;
 }
 
-.bg-click-to-action {
+@utility border-color-left {
+  border-left-color: var(--border-color) !important;
+  border-left-width: 1px !important;
+}
+
+@utility bg-click-to-action {
   background-color: var(--click-to-action) !important;
+}
+
+label {
+  @apply block text-xs font-semibold mb-2;
+}
+
+input,
+textarea {
+  @apply w-full primary-bg rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-amber-500/50 outline-none transition-all;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+}
+
+@utility primary-btn {
+  @apply w-full bg-click-to-action black-text font-bold py-3.5 rounded-xl cursor-pointer text-sm tracking-wide transition-opacity mt-2 disabled:opacity-50;
+
+  &:hover {
+    @apply transition-colors duration-150;
+    background-color: #ffa200 !important;
+  }
+}
+
+@utility secondary-btn {
+  @apply w-full border border-color font-bold py-3.5 rounded-xl cursor-pointer text-sm tracking-wide transition-opacity mt-2 disabled:opacity-50;
+
+  &:hover {
+    @apply transition-colors duration-150 bg-white/5;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
