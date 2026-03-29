@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '@/lib/axios';
+import MandatoryStars from './MandatoryStars';
 
 interface CreateEventFormProps {
   onSuccess: () => void;
@@ -10,8 +11,8 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    startDate: '',
-    endDate: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
     location: '',
     organizer: '',
   });
@@ -40,7 +41,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
   return (
     <div className="w-full h-full bg-layer-1 p-8 border-color-left">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">Create New Event</h2>
+        <h2 className="text-xl font-bold">Create Event</h2>
         {/* <button onClick={onCancel} className="text-gray-500 hover:text-white transition-colors">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -50,7 +51,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label>Event Name</label>
+          <label>Event Name <MandatoryStars /></label>
           <input
             required
             name="name"
@@ -62,21 +63,23 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label>Start Date</label>
+            <label>Start Date <MandatoryStars /></label>
             <input
               required
               type="date"
               name="startDate"
+              min={new Date().toISOString().split('T')[0]}
               value={formData.startDate}
               onChange={handleChange}
             />
           </div>
           <div>
-            <label>End Date</label>
+            <label>End Date <MandatoryStars /></label>
             <input
               required
               type="date"
               name="endDate"
+              min={formData.startDate}
               value={formData.endDate}
               onChange={handleChange}
             />
@@ -84,7 +87,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
         </div>
 
         <div>
-          <label>Location</label>
+          <label>Location <MandatoryStars /></label>
           <input
             required
             name="location"
@@ -97,7 +100,6 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
         <div>
           <label>Description</label>
           <textarea
-            required
             name="description"
             rows={3}
             value={formData.description}
@@ -109,7 +111,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
 
         {/* {error && <p className="text-red-500 text-xs">{error}</p>} */}
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 justify-center">
           <button
             type="button"
             onClick={onCancel}

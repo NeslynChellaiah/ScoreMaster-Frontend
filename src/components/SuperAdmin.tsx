@@ -37,7 +37,7 @@ export default function SuperAdmin() {
 
   return (
     <div className="flex-1 grid grid-cols-1 md:grid-cols-3 h-full overflow-hidden">
-      <div className='flex flex-col md:col-span-1 h-full overflow-hidden'>
+      <div className={`${isCreateEvent ? 'hidden md:flex' : 'flex'} md:border-color-right flex-col h-full overflow-hidden justify-between`}>
         {/* Search Header */}
         {/* <div className="p-4 border-b border-color bg-background/50">
           <SearchBar />
@@ -58,7 +58,7 @@ export default function SuperAdmin() {
       </div>
 
       {/* Main Content - Event Details Column */}
-      <div className='hidden md:flex md:col-span-2 items-center justify-center'>
+      <div className={`${isCreateEvent ? 'flex' : 'hidden'} md:flex md:col-span-2 items-center justify-center`}>
         {!isCreateEvent ? <EventPlaceholder /> : <CreateEventForm onSuccess={() => setIsCreateEvent(false)} onCancel={() => setIsCreateEvent(false)} />}
       </div>
     </div>

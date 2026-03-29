@@ -40,6 +40,11 @@
   border-left-width: 1px !important;
 }
 
+@utility border-color-right {
+  border-right-color: var(--border-color) !important;
+  border-right-width: 1px !important;
+}
+
 @utility bg-click-to-action {
   background-color: var(--click-to-action) !important;
 }
