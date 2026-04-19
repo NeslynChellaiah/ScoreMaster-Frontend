@@ -61,6 +61,17 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
           />
         </div>
 
+        <div>
+          <label>Organizer <MandatoryStars /></label>
+          <input
+            required
+            name="organizer"
+            value={formData.organizer}
+            onChange={handleChange}
+            placeholder="e.g. JOSH"
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label>Start Date <MandatoryStars /></label>
