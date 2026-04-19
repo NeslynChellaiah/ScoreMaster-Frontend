@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/axios";
+import SuperAdmin from "@/components/SuperAdmin";
 
 export default function HomePage() {
   const { user, setUser, isLoading } = useAuth();
@@ -34,7 +35,7 @@ export default function HomePage() {
   // }
 
   return (
-    <div className="min-h-screen">
+    <div className="h-screen flex flex-col overflow-hidden">
       <nav className="sticky top-0 z-10 flex items-center justify-between px-8 h-16 bg-layer-1 border-color-bottom">
         <span className="text-lg font-bold">
           ScoreMaster
@@ -49,6 +50,7 @@ export default function HomePage() {
           </button>
         </div>
       </nav>
+      <SuperAdmin />
     </div>
   );
 }

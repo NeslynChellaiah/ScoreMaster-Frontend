@@ -8,6 +8,7 @@ import {
   ReactNode,
 } from "react";
 import api from "@/lib/axios";
+import { useRouter } from "next/navigation";
 
 interface User {
   username: string;
@@ -22,13 +23,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  setUser: () => {},
+  setUser: () => { },
   isLoading: true,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     // On every mount/refresh, verify the JWT cookie with the backend.
@@ -38,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((res) => {
         // Response: { success, message, statusCode, data: { username, role } }
         setUser(res.data.data);
+        router.replace("/home");
       })
       .catch(() => {
         setUser(null);
