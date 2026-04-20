@@ -24,11 +24,17 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
     setLoading(true);
     setError('');
 
+    const prefix = formData.name.trim() ? formData.name.trim().toLowerCase().replace(/\s+/g, '_') + '_' : '';
+    const finalData = {
+      ...formData,
+      organizer: prefix + formData.organizer
+    };
+
     try {
-      await api.post("/api/events", formData);
+      await api.post("/api/events", finalData);
       onSuccess();
-    } catch (err) {
-      setError('Failed to create event. Please try again.');
+    } catch (err: any) {
+      setError(err.response?.data || 'Failed to create event. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -63,13 +69,21 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
 
         <div>
           <label>Organizer <MandatoryStars /></label>
-          <input
-            required
-            name="organizer"
-            value={formData.organizer}
-            onChange={handleChange}
-            placeholder="e.g. JOSH"
-          />
+          <div className="flex items-center primary-bg rounded-xl border border-color focus-within:ring-1 focus-within:ring-amber-500/50 transition-all overflow-hidden">
+            {formData.name.trim() && (
+              <span className="pl-4 pr-2 secondary-text text-sm whitespace-nowrap bg-white/5 self-stretch flex items-center border-r border-color">
+                {formData.name.trim().toLowerCase().replace(/\s+/g, '_')}_
+              </span>
+            )}
+            <input
+              required
+              name="organizer"
+              value={formData.organizer}
+              onChange={handleChange}
+              placeholder="e.g. johnDoe@mail.com"
+              className="flex-1 !rounded-none !bg-transparent !px-4 !py-3 !ring-0 !border-none"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
