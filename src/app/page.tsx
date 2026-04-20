@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { setUser, user, isLoading } = useAuth();
@@ -18,12 +18,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // POST /api/auth/login → { success, message, statusCode, data: { username, role } }
-      const res = await api.post("/api/auth/login", { username, password });
-      setUser({ username: res.data.data.username, role: res.data.data.role });
+      // POST /api/auth/login → { success, message, statusCode, data: { id, role } }
+      const res = await api.post("/api/auth/login", { id, password });
+      setUser({ 
+        id: res.data.data.id, 
+        username: res.data.data.username, 
+        role: res.data.data.role 
+      });
       router.push("/home");
     } catch {
-      toast.error("Invalid username or password. Please try again.", {
+      toast.error("Invalid ID or password. Please try again.", {
         pauseOnHover: true,
         draggable: true,
         theme: "dark"
@@ -49,13 +53,13 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5 text-left">
               <label>
-                Username
+                ID
               </label>
               <input
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                value={id}
+                onChange={(e) => setId(e.target.value)}
+                placeholder="Enter your ID"
                 required
               />
             </div>
