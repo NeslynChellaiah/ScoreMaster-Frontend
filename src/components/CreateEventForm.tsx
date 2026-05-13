@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '@/lib/axios';
 import MandatoryStars from './MandatoryStars';
+import { Event } from '../types';
+import { toast } from 'react-toastify';
 
 interface CreateEventFormProps {
   onSuccess: () => void;
   onCancel: () => void;
+  eventToEdit?: Event | null;
 }
 
-export default function CreateEventForm({ onSuccess, onCancel }: CreateEventFormProps) {
+export default function CreateEventForm({ onSuccess, onCancel, eventToEdit }: CreateEventFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -19,22 +22,52 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (eventToEdit) {
+      const prefix = eventToEdit.id + "_";
+      const organizerSuffix = eventToEdit.organizer.startsWith(prefix) 
+        ? eventToEdit.organizer.substring(prefix.length) 
+        : eventToEdit.organizer;
+
+      setFormData({
+        name: eventToEdit.name,
+        description: eventToEdit.description || '',
+        startDate: eventToEdit.startDate,
+        endDate: eventToEdit.endDate,
+        location: eventToEdit.location,
+        organizer: organizerSuffix,
+      });
+    }
+  }, [eventToEdit]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    const prefix = formData.name.trim() ? formData.name.trim().toLowerCase().replace(/\s+/g, '_') + '_' : '';
-    const finalData = {
-      ...formData,
-      organizer: prefix + formData.organizer
-    };
-
     try {
-      await api.post("/api/events", finalData);
+      // Re-add prefix for both create and update
+      const eventId = eventToEdit ? eventToEdit.id : formData.name.trim().toLowerCase().replace(/\s+/g, '_');
+      const prefix = eventId + '_';
+      const finalData = {
+        ...formData,
+        organizer: prefix + formData.organizer
+      };
+
+      if (eventToEdit) {
+        // Update existing event
+        await api.put(`/api/events/${eventToEdit.id}`, finalData);
+        toast.success("Event updated successfully!");
+      } else {
+        // Create new event
+        await api.post("/api/events", finalData);
+        toast.success("Event created successfully!");
+      }
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data || 'Failed to create event. Please try again.');
+      const errorMessage = err.response?.data?.message || err.response?.data || 'Failed to save event.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -44,15 +77,13 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const isEditing = !!eventToEdit;
+  const currentEventId = isEditing ? eventToEdit.id : formData.name.trim().toLowerCase().replace(/\s+/g, '_');
+
   return (
-    <div className="w-full h-full bg-layer-1 p-8 border-color-left">
+    <div className="w-full h-full bg-layer-1 p-8 border-color-left overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">Create Event</h2>
-        {/* <button onClick={onCancel} className="text-gray-500 hover:text-white transition-colors">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button> */}
+        <h2 className="text-xl font-bold">{isEditing ? "Update Event" : "Create Event"}</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -70,9 +101,9 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
         <div>
           <label>Organizer <MandatoryStars /></label>
           <div className="flex items-center primary-bg rounded-xl border border-color focus-within:ring-1 focus-within:ring-amber-500/50 transition-all overflow-hidden">
-            {formData.name.trim() && (
+            {currentEventId && (
               <span className="pl-4 pr-2 secondary-text text-sm whitespace-nowrap bg-white/5 self-stretch flex items-center border-r border-color">
-                {formData.name.trim().toLowerCase().replace(/\s+/g, '_')}_
+                {currentEventId}_
               </span>
             )}
             <input
@@ -86,6 +117,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
           </div>
         </div>
 
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label>Start Date <MandatoryStars /></label>
@@ -93,7 +125,7 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
               required
               type="date"
               name="startDate"
-              min={new Date().toISOString().split('T')[0]}
+              min={!isEditing ? new Date().toISOString().split('T')[0] : ""}
               value={formData.startDate}
               onChange={handleChange}
             />
@@ -134,25 +166,24 @@ export default function CreateEventForm({ onSuccess, onCancel }: CreateEventForm
           />
         </div>
 
-        {/* {error && <p className="text-red-500 text-xs">{error}</p>} */}
-
-        <div className="flex gap-3 justify-center">
+        <div className="flex gap-3 justify-center pt-4">
           <button
             type="button"
             onClick={onCancel}
-            className="w-50 secondary-btn"
+            className="w-40 secondary-btn"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="w-50 primary-btn"
+            className="w-40 primary-btn"
           >
-            {loading ? "Creating..." : "Create Event"}
+            {loading ? (isEditing ? "Updating..." : "Creating...") : (isEditing ? "Update Event" : "Create Event")}
           </button>
         </div>
       </form>
     </div>
   );
 }
+
